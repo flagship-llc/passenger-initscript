@@ -15,7 +15,9 @@ RVM_SHELL="rvm-shell"
 
 [ -x /usr/local/rvm/bin/rvm-shell ] && RVM_SHELL="/usr/local/rvm/bin/rvm-shell"
 
-RVM_PATH="/usr/local/rvm"
+[ -x /home/deploy/.rvm/bin/rvm-shell ] && RVM_SHELL="/home/deploy/.rvm/bin/rvm-shell"
+
+RVM_PATH="/home/deploy/.rvm/bin/rvm"
 
 PASSENGER_SYSTEM_BIN="passenger"
 
@@ -28,6 +30,7 @@ CONFIG_FILE_EXT=".yml"
 CONFIG_SHELL_OPTIONS=(
   rvm
   cwd
+  rails_relative_url_root
 )
 
 CONFIG_PASSENGER_OPTIONS=(
@@ -152,12 +155,12 @@ passenger_ctl() {
   if [ -z "$config_rvm" ]; then
     argv="$PASSENGER_SYSTEM_BIN $command $options"
   else
-    argv="rvm_path=$RVM_PATH $RVM_SHELL $config_rvm -c '$PASSENGER_RVM_BIN $command $options'"
+    argv="rvm_path=$RVM_PATH $RVM_SHELL $config_rvm -c 'RAILS_RELATIVE_URL_ROOT=$config_rails_relative_url_root $PASSENGER_RVM_BIN $command $options'"
   fi
 
   [ -n "$DEBUG" ] && echo $argv
 
-  eval $argv
+  su deploy -c "$argv"
 }
 
 passengers_ctl() {
@@ -216,13 +219,14 @@ setup() {
 
   echo "Creating config example: $config_file"
   data=""
-  data+="rvm: ruby-1.9.2@example\n"
+  data+="rvm: ruby-1.9.3-p327\n"
   data+="cwd: /var/apps/blog/current\n"
   data+="user: deploy\n"
   data+="port: 8080\n"
   data+="environment: production\n"
   data+="max-pool-size: 4\n"
   data+="min-instances: 1\n"
+  data+="rails_relative_url_root: /\n"
   data+="pid-file: /var/apps/blog/current/tmp/pids/passenger.pid\n"
   data+="log-file: /var/apps/blog/current/log/passenger.log"
 

@@ -1,3 +1,19 @@
+Flagship, LLC
+=============
+
+This fork has modifications that Flagship LLC uses on its application servers.
+
+Changed
+-------
+
+* RVM path is set to the "deploy" user's RVM
+
+Added Features
+--------------
+
+* Support for RAILS_RELATIVE_URL_ROOT
+
+
 Passenger initscript
 ====================
 
